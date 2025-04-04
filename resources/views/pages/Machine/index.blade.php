@@ -5,72 +5,48 @@
 @section('header', 'Machines')
 
 @section('content')
-    <!-- Machine Filters -->
-    <div class="bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
-        <h3 class="text-lg font-semibold mb-4">Filtrer par</h3>
-        <div class="flex space-x-4">
-            <div class="w-1/3">
-                <label for="status" class="block text-sm text-white">Statut</label>
-                <select id="status" class="px-4 py-2 w-full bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600">
-                    <option value="">Tous</option>
-                    <option value="available">Disponible</option>
-                    <option value="in-use">En Utilisation</option>
-                    <option value="maintenance">En Maintenance</option>
-                </select>
-            </div>
 
-            <div class="w-1/3">
-                <label for="type" class="block text-sm text-white">Type de Machine</label>
-                <select id="type" class="px-4 py-2 w-full bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600">
-                    <option value="">Tous</option>
-                    <option value="cardio">Cardio</option>
-                    <option value="strength">Musculation</option>
-                    <option value="flexibility">Flexibilité</option>
-                    <option value="functional">Fonctionnel</option>
-                </select>
-            </div>
+@if (session('success'))
+        <div class="bg-green-500 text-white p-3 mb-4 rounded-md">
+            {{ session('success') }}
         </div>
+    @endif
+    <div class="flex justify-between mb-4">
+        <h2 class="text-2xl font-bold">Liste des Machines</h2>
+        <a href="{{ route('machine.create') }}" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Ajouter une Machine</a>
     </div>
 
-    <!-- Machine List -->
     <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
-        <h3 class="text-lg font-semibold mb-4">Liste des Machines</h3>
         <table class="w-full border-collapse border border-gray-700">
             <thead>
                 <tr class="bg-gray-700">
-                    <th class="p-3 text-left text-sm text-white">Nom de la Machine</th>
+                    <th class="p-3 text-left text-sm text-white">Nom</th>
                     <th class="p-3 text-left text-sm text-white">Type</th>
                     <th class="p-3 text-left text-sm text-white">Statut</th>
-                    <th class="p-3 text-left text-sm text-white">Dernière Maintenance</th>
-                    <th class="p-3 text-left text-sm text-white">Action</th>
+                    <th class="p-3 text-left text-sm text-white">Actions</th>
                 </tr>
             </thead>
             <tbody>
-                <!-- Example Row 1 -->
-                <tr class="text-center">
-                    <td class="p-3 border border-gray-600">Tapis de Course</td>
-                    <td class="p-3 border border-gray-600">Cardio</td>
-                    <td class="p-3 border border-gray-600 text-green-400">Disponible</td>
-                    <td class="p-3 border border-gray-600">01/03/2025</td>
-                    <td class="p-3 border border-gray-600">
-                        <button class="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600">Maintenance</button>
-                        <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 mt-2">Marquer en Utilisation</button>
-                    </td>
-                </tr>
-
-                <!-- Example Row 2 -->
-                <tr class="text-center">
-                    <td class="p-3 border border-gray-600">Presse à Cuisses</td>
-                    <td class="p-3 border border-gray-600">Musculation</td>
-                    <td class="p-3 border border-gray-600 text-red-400">En Maintenance</td>
-                    <td class="p-3 border border-gray-600">15/02/2025</td>
-                    <td class="p-3 border border-gray-600">
-                        <button class="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600">Maintenance</button>
-                        <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 mt-2">Marquer en Utilisation</button>
-                    </td>
-                </tr>
-
-                <!-- More rows can be added here -->
+                @forelse ($machines as $machine)
+                    <tr>
+                        <td class="p-3 border border-gray-600">{{ $machine->name }}</td>
+                        <td class="p-3 border border-gray-600">{{ $machine->type_machine }}</td>
+                        <td class="p-3 border border-gray-600">{{ $machine->statut }}</td>
+                        <td class="p-3 border border-gray-600">
+                            <a href="{{ route('machine.edit', $machine->id) }}" class="bg-yellow-500 text-white px-3 py-1 rounded-md hover:bg-yellow-600">Modifier</a>
+                            <form action="{{ route('machine.destroy', $machine) }}" method="POST" class="inline-block">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600">Supprimer</button>
+                            </form>
+                            <a href="{{ route('machine.show', $machine) }}" class="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600">Show</a>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="6" class="text-center text-gray-400 p-4">Aucune machine trouvé.</td>
+                    </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
