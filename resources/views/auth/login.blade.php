@@ -17,9 +17,8 @@
     </div>
 @endif
 
-
-<div class="max-w-md mx-auto bg-gray-800 p-6 rounded shadow-md">
-    <h2 class="text-center text-xl font-semibold mb-4">Login</h2>
+<div class="max-w-md mx-auto bg-gray-800 p-8 rounded-lg shadow-lg mt-6">
+    <h2 class="text-center text-2xl font-bold text-white mb-6">Login</h2>
 
     <form action="{{ route('login.post') }}" method="POST" class="space-y-6">
         @csrf  {{-- CSRF protection --}}
@@ -28,7 +27,7 @@
         <div class="flex flex-col gap-2">
             <label class="text-sm font-medium text-gray-300">Email</label>
             <input type="email" name="email" placeholder="Email address"
-                class="w-full p-3 border border-gray-600 bg-gray-900 text-white rounded focus:outline-none focus:border-blue-500"
+                class="w-full p-3 border border-gray-700 bg-gray-900 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 required>
         </div>
 
@@ -36,41 +35,41 @@
         <div class="flex flex-col gap-2">
             <label class="text-sm font-medium text-gray-300">Password</label>
             <input type="password" name="password" placeholder="Password"
-                class="w-full p-3 border border-gray-600 bg-gray-900 text-white rounded focus:outline-none focus:border-blue-500"
+                class="w-full p-3 border border-gray-700 bg-gray-900 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 required>
         </div>
 
         <!-- Remember Me & Forgot Password -->
-        <div class="flex items-center justify-between">
-            <label class="flex items-center text-gray-400">
-                <input type="checkbox" name="remember" class="mr-2"> Remember me
+        <div class="flex items-center justify-between text-gray-400">
+            <label class="flex items-center">
+                <input type="checkbox" name="remember" class="mr-2 accent-blue-500"> Remember me
             </label>
             <a href="{{ route('forgot_password') }}" class="text-blue-500 hover:underline">Forgot Password?</a>
         </div>
 
         <!-- Login Button -->
-        <button type="submit" class="w-full bg-blue-600 p-3 rounded text-white font-semibold hover:bg-blue-700">
+        <button type="submit" class="w-full bg-blue-600 p-3 rounded-lg text-white font-semibold hover:bg-blue-700 transition duration-200">
             <i class="tabler--login"></i> Log in
         </button>
     </form>
 
     <!-- OR Separator -->
-    <div class="flex items-center justify-center gap-2 my-4">
-        <span class="h-px w-20 bg-gray-500"></span>
-        <span>OR</span>
-        <span class="h-px w-20 bg-gray-500"></span>
+    <div class="flex items-center justify-center gap-2 my-6">
+        <span class="h-px w-24 bg-gray-500"></span>
+        <span class="text-gray-400">OR</span>
+        <span class="h-px w-24 bg-gray-500"></span>
     </div>
 
     <!-- Social Login -->
-    <a href="#" class="w-full flex items-center justify-center bg-gray-900 p-3 rounded text-white font-semibold hover:bg-gray-700">
-        <i class="tabler--brand-github mr-2"></i> Login with GitHub
+    <a href="{{route('home')}}" class="w-full flex items-center justify-center bg-gray-900 p-4 rounded-lg text-white font-semibold hover:bg-gray-700 focus:ring-4 focus:ring-blue-500 transition duration-200 ease-in-out shadow-md transform hover:scale-105">
+        <i class="tabler--brand-github mr-3 text-lg"></i> Home page
     </a>
+    
 
     <!-- Register Link -->
-    <p class="text-gray-400 text-center mt-4">
+    <p class="text-gray-400 text-center mt-6">
         Don't have an account yet? 
         <a href="{{ url('/register') }}" class="text-blue-500 hover:underline">Register</a>
     </p>
 </div>
-
 @endsection
