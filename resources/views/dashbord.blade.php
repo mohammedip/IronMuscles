@@ -16,7 +16,6 @@
         </div>
         <div class="bg-gray-800 p-6 rounded">
             <h3 class="text-lg mb-3">Statut des Abonnements</h3>
-            <!-- Add a container with a specific height to control chart size -->
             <div class="relative h-58">
                 <canvas id="doughnutChart"></canvas>
             </div>
@@ -25,7 +24,13 @@
 
     <!-- Table: Adhérents -->
     <div class="bg-gray-800 p-6 rounded mb-6">
-        <h3 class="text-lg mb-3">Liste des Adhérents</h3>
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg">Quelques adhérents</h3>
+            <a href="{{ route('adherent.index') }}" 
+               class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md">
+                List des Adhérents
+            </a>
+        </div>
         <table class="w-full border-collapse border border-gray-700">
             <thead>
                 <tr class="bg-gray-700">
@@ -36,27 +41,28 @@
                 </tr>
             </thead>
             <tbody>
+                @foreach($adherents as $adherent)
                 <tr class="text-center">
-                    <td class="p-2 border border-gray-600">Jean Dupont</td>
-                    <td class="p-2 border border-gray-600">jean.dupont@mail.com</td>
-                    <td class="p-2 border border-gray-600">Annuel</td>
-                    <td class="p-2 border border-gray-600 text-green-400">Actif</td>
+                    <td class="p-2 border border-gray-600">{{ $adherent->name }}</td>
+                    <td class="p-2 border border-gray-600">{{ $adherent->email }}</td>
+                    <td class="p-2 border border-gray-600 
+                        {{ $adherent->statut_abonnement ? 'text-green-400' : 'text-red-400' }}">
+                        {{ $adherent->statut_abonnement ? 'Actif' : 'Inactif' }}
+                    </td>
+                    <td class="p-2 border border-gray-600 
+                        {{ $adherent->is_activate ? 'text-green-400' : 'text-red-400' }}">
+                        {{ $adherent->is_activate ? 'Actif' : 'Expiré' }}
+                    </td>
                 </tr>
-                <tr class="text-center">
-                    <td class="p-2 border border-gray-600">Sophie Martin</td>
-                    <td class="p-2 border border-gray-600">sophie.martin@mail.com</td>
-                    <td class="p-2 border border-gray-600">Mensuel</td>
-                    <td class="p-2 border border-gray-600 text-red-400">Expiré</td>
-                </tr>
+                @endforeach
             </tbody>
         </table>
     </div>
-
 @endsection
 
 @section('chartScripts')
     <script>
-        // Bar Chart - Adhésions par Mois
+       
         const ctxBar = document.getElementById('barChart').getContext('2d');
         new Chart(ctxBar, {
             type: 'bar',
@@ -64,20 +70,20 @@
                 labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'],
                 datasets: [{
                     label: 'Adhésions',
-                    data: [40, 55, 60, 80, 75, 90, 110, 95, 85, 100, 120, 130],
+                    data: @json(array_values($mois)), 
                     backgroundColor: 'rgba(54, 162, 235, 0.5)'
                 }]
             }
         });
 
-        // Doughnut Chart - Statut des Abonnements
+
         const ctxDoughnut = document.getElementById('doughnutChart').getContext('2d');
         new Chart(ctxDoughnut, {
             type: 'doughnut',
             data: {
-                labels: ['Actifs', 'Expirés', 'Suspendus'],
+                labels: @json(array_keys($subscriptionStats)), 
                 datasets: [{
-                    data: [60, 25, 15],
+                    data: @json(array_values($subscriptionStats)), 
                     backgroundColor: ['#4CAF50', '#F44336', '#FF9800']
                 }]
             },
