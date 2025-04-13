@@ -13,11 +13,6 @@ class AuthRepository implements AuthRepositoryInterface{
         return User::where('email', $email)->first();
     }
 
-    // public function findByToken($email){
-
-    //     return User::where('token', $email)->first();
-    // }
-
     public function create(array $data){
 
         return User::create($data);

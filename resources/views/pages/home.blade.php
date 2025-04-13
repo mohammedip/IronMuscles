@@ -15,7 +15,7 @@
         top: 0;
         left: 0;
         width: 100%;
-        height: 100%;
+        height: 90%;
         background: linear-gradient(to bottom, rgba(15, 14, 23, 0.7), rgba(15, 14, 23, 0.9));
     }
     
@@ -96,12 +96,19 @@
         opacity: 1;
         transform: translateY(0);
     }
+    @media (max-width: 1480px) {
+
+        .hero-section .btn-primary {
+            margin-bottom: 1rem;
+        }
+
+    }
 </style>
 @endsection
 
 @section('content')
 <!-- Hero Section with Animation -->
-<div class="relative bg-cover bg-center h-screen hero-section" style="background-image: url('https://cdnjs.cloudflare.com/ajax/libs/pexels-photo-library/1/pictures/1954524/pexels-photo-1954524.jpeg');">
+<div class="relative bg-cover bg-center h-[90vh] hero-section" style="background-image: url('https://cdnjs.cloudflare.com/ajax/libs/pexels-photo-library/1/pictures/1954524/pexels-photo-1954524.jpeg');">
     <div class="absolute inset-0 flex flex-col justify-center items-center text-center px-4" id="home">
         <h1 class="text-6xl font-extrabold tracking-tight text-fffffe mb-2" data-aos="fade-down" data-aos-delay="100">
             <span class="text-ff8906">IRON</span><span class="text-fffffe">MUSCLE</span>
@@ -122,14 +129,6 @@
         </div>
     </div>
     
-    <!-- Animated Down Arrow -->
-    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2">
-        <a href="#about" class="text-fffffe animate-bounce block">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-            </svg>
-        </a>
-    </div>
 </div>
 
 <!-- Stats Counter Section -->
@@ -191,7 +190,7 @@
                 </div>
             </div>
         </div>
-        <div class="relative animate-on-scroll" data-delay="300">
+        <div class="relative animate-on-scroll mt-28 ml-8 lg:mt-0 lg:ml-0" data-delay="300">
             <img src="https://cdnjs.cloudflare.com/ajax/libs/pexels-photo-library/1/pictures/841130/pexels-photo-841130.jpeg" alt="Gym Interior" class="rounded-lg shadow-2xl w-full">
             <div class="absolute -bottom-6 -left-6 bg-ff8906 rounded-lg p-6 shadow-xl max-w-xs">
                 <p class="text-0f0e17 font-bold text-lg">"At IronMuscle, we don't just build bodies, we build character."</p>
@@ -409,31 +408,32 @@ function selectPlan(plan) {
             </div>
             
             <div class="animate-on-scroll" data-delay="300">
-                <form class="bg-0f0e17 p-8 rounded-lg shadow-xl">
+                <form action="{{ route('contact.submit') }}" method="POST" class="bg-0f0e17 p-8 rounded-lg shadow-xl">
+                    @csrf
                     <h3 class="text-2xl font-bold text-fffffe mb-6">SEND US A MESSAGE</h3>
-                    
+                
                     <div class="mb-6">
                         <label for="name" class="block text-a7a9be mb-2">Full Name</label>
-                        <input type="text" id="name" class="w-full bg-0f0e17 border-2 border-a7a9be rounded-lg p-3 text-fffffe focus:border-ff8906 focus:outline-none transition-colors">
+                        <input type="text" id="name" name="name" class="w-full bg-0f0e17 border-2 border-a7a9be rounded-lg p-3 text-fffffe focus:border-ff8906 focus:outline-none transition-colors">
                     </div>
                     
                     <div class="mb-6">
                         <label for="email" class="block text-a7a9be mb-2">Email Address</label>
-                        <input type="email" id="email" class="w-full bg-0f0e17 border-2 border-a7a9be rounded-lg p-3 text-fffffe focus:border-ff8906 focus:outline-none transition-colors">
+                        <input type="email" id="email" name="email" class="w-full bg-0f0e17 border-2 border-a7a9be rounded-lg p-3 text-fffffe focus:border-ff8906 focus:outline-none transition-colors">
                     </div>
                     
                     <div class="mb-6">
                         <label for="phone" class="block text-a7a9be mb-2">Phone Number</label>
-                        <input type="tel" id="phone" class="w-full bg-0f0e17 border-2 border-a7a9be rounded-lg p-3 text-fffffe focus:border-ff8906 focus:outline-none transition-colors">
+                        <input type="tel" id="phone" name="phone" class="w-full bg-0f0e17 border-2 border-a7a9be rounded-lg p-3 text-fffffe focus:border-ff8906 focus:outline-none transition-colors">
                     </div>
                     
                     <div class="mb-6">
                         <label for="message" class="block text-a7a9be mb-2">Your Message</label>
-                        <textarea id="message" rows="4" class="w-full bg-0f0e17 border-2 border-a7a9be rounded-lg p-3 text-fffffe focus:border-ff8906 focus:outline-none transition-colors"></textarea>
+                        <textarea id="message" name="message" rows="4" class="w-full bg-0f0e17 border-2 border-a7a9be rounded-lg p-3 text-fffffe focus:border-ff8906 focus:outline-none transition-colors"></textarea>
                     </div>
                     
                     <button type="submit" class="w-full bg-ff8906 text-fffffe font-bold py-3 px-4 rounded-lg hover:bg-opacity-90 transition-colors">SEND MESSAGE</button>
-                </form>
+                </form>                
             </div>
         </div>
     </div>
@@ -491,9 +491,12 @@ function selectPlan(plan) {
             <div>
                 <h4 class="text-lg font-semibold text-fffffe mb-4">NEWSLETTER</h4>
                 <p class="text-a7a9be mb-4">Subscribe to our newsletter for the latest updates and exclusive offers.</p>
-                <form>
+                <form action="{{ route('newsletter.submit') }}" method="POST">
+                    @csrf
                     <div class="flex">
-                        <input type="email" placeholder="Your email address" class="flex-1 py-2 px-3 bg-0f0e17 border-2 border-a7a9be rounded-l-lg text-fffffe focus:border-ff8906 focus:outline-none">
+                        <input type="email" name="email" placeholder="Your email address" 
+                            class="flex-1 py-2 px-3 bg-0f0e17 border-2 border-a7a9be rounded-l-lg text-fffffe focus:border-ff8906 focus:outline-none"
+                            required>
                         <button type="submit" class="bg-ff8906 text-fffffe py-2 px-4 rounded-r-lg hover:bg-opacity-90 transition-colors">SUBSCRIBE</button>
                     </div>
                 </form>
