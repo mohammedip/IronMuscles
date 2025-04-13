@@ -21,6 +21,8 @@ class User extends Authenticatable
         'name',
         'email', 
         'password',
+        'role_id',
+        'img',
     ];
 
     /**
@@ -45,4 +47,29 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    public function hasPermission($permissionName)
+    {
+        return $this->role->permissions->contains('name', $permissionName);
+    }
+
+    public function hasRole($role)
+    {
+        return $this->role()->where('name', $role)->exists();
+    }
+
+    public function hasAnyRole($roles)
+    {
+        if (is_array($roles)) {
+            return $this->role()->whereIn('name', $roles)->exists();
+        }
+        return $this->hasRole($roles);
+    }
+
+
 }

@@ -1,15 +1,18 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Auth;
 
+use App\Models\Adherent;
 use Illuminate\Http\Request;
 use App\Mail\ResetPasswordMail;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\LoginRequest;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\StoreAdherentRequest;
 use Illuminate\Support\Facades\Password;
 use App\Repositories\AuthRepositoryInterface;
 
@@ -26,14 +29,22 @@ class AuthController extends Controller
 
         $user = $this->authRepository->findByEmail($request->email);
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        $adherent=Adherent::where('email',$user->email)->first();
 
-            return redirect()->back()->with('status', 'Invalid login information.');
+        
+
+        if (!$user || !Hash::check($request->password, $user->password) ) {
+
+
+            return redirect()->back()->with('error', 'Invalid login information ');
 
         }else{
+            
+            if($adherent && $adherent->is_activate == 0){
+                return redirect()->back()->with('error', 'Your were baned');
+            }
             Auth::login($user);
-            // auth()->login($user);
-            return view('/dashbord');
+            return redirect('/');
         }
 
 
@@ -46,18 +57,20 @@ class AuthController extends Controller
         return redirect('/login');
     }
 
-    public function register(RegisterRequest $request){
+    public function register(RegisterRequest $request , StoreAdherentRequest $AdherentRequest){
 
         $user =  $this->authRepository->create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role_id' => 7,
         ]);
 
-        Auth::login($user);
-        // auth()->login($user);
+        Adherent::create($AdherentRequest->validated());
 
-        return redirect()->route('dashbord')->with('status', 'Account created successfully.');
+        Auth::login($user);
+
+        return redirect()->route('login');
     }
     
 

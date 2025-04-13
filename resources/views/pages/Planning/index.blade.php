@@ -5,77 +5,145 @@
 @section('header', 'Planning des Cours')
 
 @section('content')
-    <!-- Planning Filters -->
-    <div class="bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
-        <h3 class="text-lg font-semibold mb-4">Filtrer par</h3>
-        <div class="flex space-x-4">
-            <div class="w-1/3">
-                <label for="trainer" class="block text-sm text-white">Enseignant</label>
-                <select id="trainer" class="px-4 py-2 w-full bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600">
-                    <option value="">Tous</option>
-                    <option value="trainer1">Jean Dupont</option>
-                    <option value="trainer2">Sophie Martin</option>
-                    <option value="trainer3">Michel Leblanc</option>
-                </select>
-            </div>
+    <!-- Include FullCalendar CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
+    
+    <style>
+        body {
+            background-color: #121212;
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+        }
 
-            <div class="w-1/3">
-                <label for="course" class="block text-sm text-white">Type de Cours</label>
-                <select id="course" class="px-4 py-2 w-full bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600">
-                    <option value="">Tous</option>
-                    <option value="yoga">Yoga</option>
-                    <option value="fitness">Fitness</option>
-                    <option value="crossfit">Crossfit</option>
-                    <option value="zumba">Zumba</option>
-                </select>
-            </div>
+        .calendar-container {
+            background: linear-gradient(135deg, #1E293B, #111827);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.3);
+        }
 
-            <div class="w-1/3">
-                <label for="date" class="block text-sm text-white">Date</label>
-                <input type="date" id="date" class="px-4 py-2 w-full bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600">
-            </div>
-        </div>
+        #calendar {
+            background-color: #1F2937;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .fc-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+        }
+
+        /* Space between Mois | Semaine | Jour */
+        .fc-toolbar-chunk:nth-child(3) {
+            margin-left: 20px;
+        }
+
+        /* Space between "Aujourd'hui" and navigation buttons */
+        .fc-toolbar-chunk:nth-child(1) {
+            display: flex;
+            gap: 15px;
+        }
+
+        .fc-toolbar-title {
+            font-size: 24px !important;
+            font-weight: bold;
+            color: #60A5FA;
+        }
+
+        .fc-daygrid-day-number {
+            color: #9CA3AF !important;
+        }
+
+        .fc-event {
+            border-radius: 8px !important;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .fc-event:hover {
+            transform: scale(1.05);
+            background-color: #3B82F6 !important;
+            color: white !important;
+        }
+
+        .fc-button {
+            background-color: #3B82F6 !important;
+            border: none !important;
+            padding: 10px 15px !important;
+            border-radius: 8px !important;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .fc-col-header {
+            background-color: #1E293B !important; /* Dark background */
+            color: #ffffff !important; /* White text */
+        }
+
+        /* Ensure day names (Lundi, Mardi, etc.) are visible */
+        .fc-col-header-cell {
+            font-size: 16px;
+            font-weight: bold;
+            padding: 12px;
+            text-transform: capitalize; /* Keep first letter capitalized */
+        }
+
+        /* Border and spacing for better visibility */
+        .fc-col-header-cell-cushion {
+            color: #ffffff !important; /* Ensure text remains visible */
+            padding: 10px;
+            border-bottom: 2px solid #3B82F6; /* Add a subtle blue underline */
+        }
+
+        .fc-daygrid-event {
+            cursor: pointer !important;
+        }
+
+        .fc-button:hover {
+            background-color: #2563EB !important;
+        }
+    </style>
+
+    <!-- Calendar Container -->
+    <div class="calendar-container mx-auto max-w-5xl mt-10 p-6">
+        <h3 class="text-3xl font-extrabold text-center text-gray-200 mb-6">📅 Mon Planning d'Entraînement</h3>
+        <div id="calendar"></div>
     </div>
 
-    <!-- Weekly Schedule -->
-    <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
-        <h3 class="text-lg font-semibold mb-4">Planning des Cours</h3>
-        <div class="grid grid-cols-7 gap-4">
-            <div class="text-center text-white font-semibold">Lundi</div>
-            <div class="text-center text-white font-semibold">Mardi</div>
-            <div class="text-center text-white font-semibold">Mercredi</div>
-            <div class="text-center text-white font-semibold">Jeudi</div>
-            <div class="text-center text-white font-semibold">Vendredi</div>
-            <div class="text-center text-white font-semibold">Samedi</div>
-            <div class="text-center text-white font-semibold">Dimanche</div>
+    <!-- Include FullCalendar JS -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/fr.js"></script>
 
-            <!-- Sample class for each day -->
-            <div class="bg-gray-700 p-4 text-center rounded-lg">
-                <h4 class="text-sm font-semibold">Yoga</h4>
-                <p class="text-xs text-gray-300">9:00 AM - 10:00 AM</p>
-                <p class="text-xs text-gray-400">Enseignant: Jean Dupont</p>
-            </div>
+    @section('planningScript')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
 
-            <div class="bg-gray-700 p-4 text-center rounded-lg">
-                <h4 class="text-sm font-semibold">Fitness</h4>
-                <p class="text-xs text-gray-300">10:30 AM - 11:30 AM</p>
-                <p class="text-xs text-gray-400">Enseignant: Sophie Martin</p>
-            </div>
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth', 
+            locale: 'fr',
+            themeSystem: 'bootstrap',
+            height: "auto",
+            nowIndicator: true,
+            headerToolbar: {
+                right: 'prev today next', 
+                center: 'title',
+                left: '',
+            },
+            events: "{{ route('planning.events') }}",
+            eventColor: '#3B82F6',
+            eventTextColor: '#ffffff',
+            eventDisplay: 'block',
+            eventClick: function(info) {
+                let eventData = info.event.extendedProps; 
+                alert("Cours: " + eventData.programme + " - " + eventData.coach + "\nDébut: " + info.event.start.toLocaleString());
+            }
+        });
 
-            <div class="bg-gray-700 p-4 text-center rounded-lg">
-                <h4 class="text-sm font-semibold">Zumba</h4>
-                <p class="text-xs text-gray-300">1:00 PM - 2:00 PM</p>
-                <p class="text-xs text-gray-400">Enseignant: Michel Leblanc</p>
-            </div>
+        calendar.render();
 
-            <div class="bg-gray-700 p-4 text-center rounded-lg">
-                <h4 class="text-sm font-semibold">Crossfit</h4>
-                <p class="text-xs text-gray-300">4:00 PM - 5:00 PM</p>
-                <p class="text-xs text-gray-400">Enseignant: Jean Dupont</p>
-            </div>
-
-            <!-- Repeat for each day as needed -->
-
-        </div>
-    </div>
+        });
+    </script>
+    @endsection
 @endsection

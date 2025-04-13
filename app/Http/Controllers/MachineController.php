@@ -2,63 +2,54 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Machine;
 use Illuminate\Http\Request;
+use App\Http\Requests\StoreMachineRequest;
+use App\Http\Requests\UpdateMachineRequest;
 
 class MachineController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        return view('pages/Machine.index');
+        $machines = Machine::get();
+        return view('pages.Machine.index', compact('machines'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('pages.Machine.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(StoreMachineRequest $request)
     {
-        //
+
+        Machine::create($request->validated());
+
+        return redirect()->route('machine.index')->with('success', 'Machine added successfully');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(Machine $machine)
     {
-        //
+        return view('pages.Machine.show', compact('machine'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function edit(Machine $machine)
     {
-        //
+        return view('pages.Machine.edit', compact('machine'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(UpdateMachineRequest $request, Machine $machine)
     {
-        //
+
+        $machine->update($request->validated());
+
+        return redirect()->route('machine.index')->with('success', 'Machine updated successfully');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(Machine $machine)
     {
-        //
+        $machine->delete();
+
+        return redirect()->route('machine.index')->with('success', 'Machine deleted successfully');
     }
 }
