@@ -10,7 +10,7 @@
     <div class="flex items-center space-x-6">
         <!-- Profile Picture -->
         <div class="w-28 h-28 bg-gray-700 rounded-full overflow-hidden border-4 border-blue-500">
-            <img src="{{ asset('images/profile-picture.jpg') }}" alt="User Profile Picture" class="w-full h-full object-cover">
+            <img src="{{ $user->img ? asset('storage/' . $user->img) : asset('images/profile-picture.jpg') }}" alt="User Profile Picture" class="w-full h-full object-cover">
         </div>
 
         <!-- User Info -->
@@ -35,10 +35,21 @@
     </div>
       <div class="mt-6 text-center">
             <a href="{{route('profil.edit')}}" 
-               class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-200">
+               class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-200 mr-1">
                Modifier le Profil
             </a>
-        </div>
+        
+        @role('coach')
+                <a href="{{ route('entrainement.index') }}" 
+                class="bg-green-600 text-white px-6 mr-1 py-2 rounded-md hover:bg-green-700 transition duration-200">
+                <i class="fas fa-calendar-alt"></i>  Entraînements
+                </a>        
+        @endrole
+                <a href="{{ route('badge.download') }}"
+                    class="bg-purple-600 text-white px-6 py-2 rounded-md hover:bg-purple-700 transition duration-200">
+                    🎖️ Télécharger mon Badge
+                </a>
+    </div>
 </div>
 
 @role( 'adherent')
@@ -80,17 +91,17 @@
             </div>
 
             <!-- Historique Abonnement Button -->
+            
+            @else
+            <p class="text-red-400 text-lg">Aucun abonnement actif</p>
+            @endif
             <div class="mt-6 text-center">
                 <a href="{{ route('abonnement.index') }}" 
                    class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-200">
                     Historique Abonnement
                 </a>
             </div>
-
-        @else
-            <p class="text-red-400 text-lg">Aucun abonnement actif</p>
-        @endif
-    </div>
+        </div>
 
     <!-- Workout Plan Section -->
     <div class="bg-gray-900 p-8 rounded-xl shadow-lg mb-6">

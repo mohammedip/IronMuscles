@@ -7,12 +7,12 @@
 @section('content')
 
 <div class="bg-gray-900 p-8 rounded-xl shadow-lg mb-6">
-    <form action="{{ route('profil.update') }}" method="POST">
+    <form action="{{ route('profil.update') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
         <div class="flex items-center space-x-6 mb-4">
             <div class="w-28 h-28 bg-gray-700 rounded-full overflow-hidden border-4 border-blue-500">
-                <img src="{{ asset('images/profile-picture.jpg') }}" alt="User Profile Picture" class="w-full h-full object-cover">
+                <img src="{{ $user->img ? asset('storage/' . $user->img) : asset('images/profile-picture.jpg') }}" alt="User Profile Picture" class="w-full h-full object-cover">
             </div>
 
             <div class="text-white">
@@ -28,6 +28,11 @@
                 <input type="text" id="name" name="name" value="{{ old('name', $user->name) }}" class="bg-gray-800 text-white p-2 rounded-md" required>
                 @error('name') <span class="text-red-500">{{ $message }}</span> @enderror
             </div>
+
+            <div class="flex items-center justify-between text-white">
+                <label for="img" class="mr-4 whitespace-nowrap">Modifier la photo de profil</label>
+                <input type="file" name="img" id="img" accept="image/*" class="bg-gray-800 text-white p-2 rounded-md w-1/6">
+            </div>                                 
 
             <div class="flex justify-between">
                 <label for="email" class="text-lg">Email</label>
