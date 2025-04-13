@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\Models\Coach;
 use App\Models\Adherent;
+use PDF;
 use App\Models\Abonnement;
 use App\Models\Speciality;
 use App\Models\Entrainement;
@@ -12,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\UpdateProfileRequest;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class ProfileController extends Controller
 {
@@ -49,8 +51,14 @@ class ProfileController extends Controller
                         }
                     }
                 }
-            
-                $nextTrainingDate =$closestDate->format('l d M Y');
+                if($closestDate){
+
+                    $nextTrainingDate =$closestDate->format('l d M Y');
+                }else{
+                    $nextTrainingDate = "Non entrainement prevus !";
+                }
+
+                
             }
             
 
@@ -108,8 +116,11 @@ class ProfileController extends Controller
         } else {
             unset($data['password']); 
         }
-    
-        $user->update($data);
+
+        if ($request->hasFile('img')) {
+            $imagePath = $request->file('img')->store('profiles', 'public');
+            $data['img'] = $imagePath;
+        }
     
         if ($adherent = Adherent::where('email', $user->email)->first()) {
             $adherent->update($data);
@@ -118,8 +129,33 @@ class ProfileController extends Controller
         if ($coach = Coach::where('email', $user->email)->first()) {
             $coach->update($data);
         }
-    
-        return redirect()->route('profil.index')->with('success', 'Profil mis à jour avec succès');
+
+        $user->update($data);
+
+        return redirect()->route('profil.index')->with('status', 'Profil mis à jour avec succès');
     }
+
+
+    public function downloadBadge()
+    {
+        $user = Auth::user();
+    
+        $imagePath = public_path('storage/'.$user->img); 
+        $imageData = base64_encode(file_get_contents($imagePath));
+        $imageType = pathinfo($imagePath, PATHINFO_EXTENSION);
+        $imageSrc = 'data:image/' . $imageType . ';base64,' . $imageData;
+    
+        $data = [
+            'id' => $user->id,
+            'name' => $user->name,
+            'role' => $user->role->name,
+            'photo' => $imageSrc,
+        ];
+    
+        $pdf = PDF::loadView('pages.Profile.pdf', $data);
+        return $pdf->download('badge-' . $user->name . '.pdf');
+    }
+    
+    
     
 }
