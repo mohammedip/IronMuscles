@@ -29,17 +29,21 @@ class AuthController extends Controller
 
         $user = $this->authRepository->findByEmail($request->email);
 
+        if(!$user){
+            return redirect()->back()->with('error', 'Invalid Email ');
+        }
+
         $adherent=Adherent::where('email',$user->email)->first();
 
         
 
-        if (!$user || !Hash::check($request->password, $user->password) ) {
+        if (!Hash::check($request->password, $user->password) ) {
 
 
-            return redirect()->back()->with('error', 'Invalid login information ');
+            return redirect()->back()->with('error', 'Password incorrect ');
 
         }else{
-            
+
             if($adherent && $adherent->is_activate == 0){
                 return redirect()->back()->with('error', 'Your were baned');
             }

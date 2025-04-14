@@ -6,19 +6,6 @@
         <a href="/"><h2 class="text-2xl font-semibold text-white">IronMuscles</h2> </a>
     </div>
 
-@if(session('status'))
-    <div id="statusMessage" class="bg-green-100 text-green-800 border border-green-300 p-4 rounded mb-4">
-        {{ session('status') }}
-        <button class="ml-4 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition duration-200" onclick="dismissMessage('statusMessage')">X</button>
-    </div>
-@endif
-@if(session('error'))
-    <div id="errorMessage" class="bg-red-100 text-red-800 border border-red-300 p-4 rounded mb-4">
-        {{ session('error') }}
-        <button class="ml-4 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition duration-200" onclick="dismissMessage('errorMessage')">X</button>
-    </div>
-@endif
-
     <!-- Navigation and Actions -->
     <div class="flex items-center space-x-6">
         @auth
@@ -46,6 +33,26 @@
     </div>
 </header>
 
+<!-- Toast Notifications -->
+@if(session('status'))
+    <div id="statusMessage" 
+         class="fixed bottom-5 right-5 w-80 max-w-sm bg-green-100 text-green-800 border border-green-300 p-4 rounded shadow-lg z-50 flex items-center space-x-4">
+        <span>{{ session('status') }}</span>
+        <button class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition" 
+                onclick="dismissMessage('statusMessage')">X</button>
+    </div>
+@endif
+
+@if(session('error'))
+    <div id="errorMessage" 
+         class="fixed bottom-5 right-5 w-80 max-w-sm bg-red-100 text-red-800 border border-red-300 p-4 rounded shadow-lg z-50 flex items-center space-x-4 mt-2">
+        <span>{{ session('error') }}</span>
+        <button class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition" 
+                onclick="dismissMessage('errorMessage')">X</button>
+    </div>
+@endif
+
+
 @section('topbarScripts')
 <script>
 
@@ -55,6 +62,8 @@
             messageElement.classList.add('hidden'); 
         }
     }
+
+
 
 </script>
 @endsection

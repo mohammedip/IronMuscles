@@ -26,21 +26,21 @@ class AdherentController extends Controller
     {
         $adherent->update(['is_activate' => 1]);
     
-        return redirect()->back()->with('success', 'Utilisateur activé avec succès.');
+        return redirect()->back()->with('status', 'Utilisateur activé avec succès.');
     }
     
     public function ban(Adherent $adherent)
     {
         $adherent->update(['is_activate' => 0]);
     
-        return redirect()->back()->with('success', 'Utilisateur banni avec succès.');
+        return redirect()->back()->with('status', 'Utilisateur banni avec succès.');
     }
 
     public function destroy(Adherent $adherent)
     {
         $adherent->delete(); 
 
-        return redirect()->route('adherent.index')->with('success', 'Adhérent supprimé avec succès.');
+        return redirect()->route('adherent.index')->with('status', 'Adhérent supprimé avec succès.');
     }
     
 }

@@ -46,12 +46,13 @@
                     <td class="p-2 border border-gray-600">{{ $adherent->name }}</td>
                     <td class="p-2 border border-gray-600">{{ $adherent->email }}</td>
                     <td class="p-2 border border-gray-600 
-                        {{ $adherent->statut_abonnement ? 'text-green-400' : 'text-red-400' }}">
-                        {{ $adherent->statut_abonnement ? 'Actif' : 'Inactif' }}
+                        {{ $adherent->statut_abonnement === 'Actif' ? 'text-green-400' : ($adherent->statut_abonnement === 'Expiré' ? 'text-yellow-400' : 'text-red-400') }}">
+                        {{ $adherent->statut_abonnement }}
                     </td>
+                    
                     <td class="p-2 border border-gray-600 
-                        {{ $adherent->is_activate ? 'text-green-400' : 'text-red-400' }}">
-                        {{ $adherent->is_activate ? 'Actif' : 'Expiré' }}
+                        {{ $adherent->is_activate == 1 ? 'text-green-400' : 'text-red-400' }}">
+                        {{ $adherent->is_activate == 1 ? 'Actif' : 'Inactif' }}
                     </td>
                 </tr>
                 @endforeach

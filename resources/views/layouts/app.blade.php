@@ -209,7 +209,7 @@
         <!-- Sidebar -->
 
         @auth
-            @role(['admin','coach'])
+            @role('admin')
                 @include('components.sidebar')
             @endrole
         @endauth
