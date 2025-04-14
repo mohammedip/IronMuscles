@@ -72,7 +72,7 @@
             <label class="text-sm font-medium text-gray-300">Date de Recrutement</label>
             <input type="date" name="date_recrutement" 
                 class="w-full p-3 border border-gray-600 bg-gray-900 text-white rounded focus:outline-none focus:border-blue-500"
-                value="{{ old('date_recrutement', now()->toDateString()) }}" required>
+                 min="{{ \Carbon\Carbon::create(2008, 1, 1)->toDateString() }}" required>
             @error('date_recrutement') <span class="text-red-500">{{ $message }}</span> @enderror
         </div>
 

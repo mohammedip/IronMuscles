@@ -18,6 +18,7 @@ class Adherent extends Model
         'numero_telephone',
         'email',
         'is_activate',
+        'statut_abonnement',
     ];
 
     protected $dates = ['deleted_at'];

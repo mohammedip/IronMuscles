@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('numero_telephone'); 
             $table->string('email')->unique(); 
             $table->timestamp('date_Inscription')->useCurrent();
-            $table->enum('statut_abonnement', ['Actif', 'Inactif'])->default('Inactif'); 
+            $table->enum('statut_abonnement', ['Actif','Expiré', 'InaEctif'])->default('Inactif'); 
             $table->boolean('is_activate')->default(true);
             $table->timestamps();
             $table->softDeletes();
