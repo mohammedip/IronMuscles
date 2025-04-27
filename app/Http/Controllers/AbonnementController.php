@@ -20,6 +20,11 @@ class AbonnementController extends Controller
     {
         $user = Auth::user();
 
+        if ($user->role->name == "admin") {
+            $abonnements = Abonnement::with('adherent')->orderBy('date_Debut', 'desc')->get();
+            return view('pages.admin.Abonnement.index', compact('abonnements'));
+        }
+
         $adherent = Adherent::where('email', $user->email)->first();
 
         if (!$adherent) {
@@ -40,7 +45,30 @@ class AbonnementController extends Controller
 
         $abonnementStatus = ($latestAbonnement && $latestAbonnement->date_Fin > now()) ? 'Actif' : 'Expiré';
 
-        return view('pages.Abonnement.index', compact('abonnements', 'latestAbonnement', 'abonnementStatus','payment'));
+        return view('pages.adherent.Abonnement.index', compact('abonnements', 'latestAbonnement', 'abonnementStatus','payment'));
+    }
+
+    public function edit(Abonnement $abonnement){
+        return view('pages.admin.Abonnement.edit',compact('abonnement'));
+    }
+
+    public function update(Request $request, Abonnement $abonnement)
+    {
+        $request->validated();
+
+        $abonnement->update([
+            'type_Abonnement' => $request->type_Abonnement,
+            'prix' => $request->prix,
+            'date_Debut' => $request->date_Debut,
+            'date_Fin' => $request->date_Fin,
+        ]);
+
+        return redirect()->route('abonnement.index')->with('status', 'Abonnement mis à jour avec succès.');
+    }
+
+
+    public function destroy(Abonnement $abonnement){
+        
     }
 
 
@@ -78,7 +106,7 @@ class AbonnementController extends Controller
         $type = $validated['type_Abonnement'];
         $price = $prices[$type];
     
-        return view('pages/Abonnement.payment', compact('type', 'price'));
+        return view('pages/adherent/Abonnement.payment', compact('type', 'price'));
     }
 
     public function processPayment(Request $request)
@@ -180,7 +208,7 @@ class AbonnementController extends Controller
                     'status' => 'Completed',
                 ]);
     
-                return redirect()->route('abonnement.success')->with('success', 'Paiement réussi!');
+                return redirect()->route('abonnement.success')->with('status', 'Paiement réussi!');
             }
         } catch (\Exception $e) {
             Log::error('Stripe Payment Error: ' . $e->getMessage());
@@ -200,7 +228,7 @@ class AbonnementController extends Controller
 
     public function success()
     {
-        return view('pages/Abonnement.success');
+        return view('pages/adherent/Abonnement.success');
     }
 }
 
