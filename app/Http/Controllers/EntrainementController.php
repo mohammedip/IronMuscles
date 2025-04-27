@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use App\Models\User;
 use App\Models\Coach;
 use App\Models\Machine;
 use App\Models\Adherent;
@@ -12,47 +13,50 @@ use Illuminate\Http\Request;
 use App\Models\EntrainementJours;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\StoreEnrainementRequest;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class EntrainementController extends Controller
 {
+    use AuthorizesRequests;
     /**
      * Display a listing of the resource.
      */
 
      public function index()
     {
-        $coach = Coach::where('email', Auth::user()->email)->first();
+        $this->authorize('viewAny', Entrainement::class);
+        $coach = Auth::user();
 
-        $entrainements = Entrainement::where('id_coach', $coach->id)->with('adherent')->get();
+        $entrainements = Entrainement::where('id_coach', $coach->id)
+        ->with(['adherent', 'jours'])
+        ->withCount('jours')
+        ->get();
 
-        return view('pages.Entrainement.index', compact('entrainements'));
+        return view('pages.coach.Entrainement.index', compact('entrainements'));
     }
 
 
     public function planning()
     {
-        $user = Auth::user();
-        $adherent = \App\Models\Adherent::where('email', $user->email)->first();
+        $adherent = Auth::user();
 
-        if (!$adherent) {
-            return view('pages.Planning.index', ['entrainements' => []]);
+        if ($adherent->role->name != "adherent") {
+            return redirect()->route('home')->with('error', 'Vous devais etre un adherent pour effectuer cette action.');
         }
+
 
         $entrainements = Entrainement::where('id_adherent', $adherent->id)
             ->with(['coach.speciality', 'jours.machine'])
             ->get();
 
-        return view('pages.Planning.index', ['entrainements' => $entrainements]);
+        return view('pages.adherent.Planning.index', ['entrainements' => $entrainements]);
     }
 
     public function getEvents()
     {
-        $user = Auth::user();
-        $adherent = \App\Models\Adherent::where('email', $user->email)->first();
+        
 
-        if (!$adherent) {
-            return response()->json([]);
-        }
+        $adherent = Auth::user();
 
         $entrainements = Entrainement::where('id_adherent', $adherent->id)
             ->with(['coach.speciality', 'jours.machine'])
@@ -88,9 +92,13 @@ class EntrainementController extends Controller
      */
     public function create()
     {
-        $adherents = Adherent::where('statut_abonnement','Actif')->get(); 
+        $this->authorize('create', Entrainement::class);
+
+        $adherents = User::whereHas('role', function ($query) {
+            $query->where('name', 'adherent');
+        })->where('statut_abonnement','Actif')->get(); 
         $machines = Machine::get();
-        return view('pages/Entrainement.create', compact('adherents','machines'));
+        return view('pages/coach/Entrainement.create', compact('adherents','machines'));
     }
 
     /**
@@ -98,8 +106,8 @@ class EntrainementController extends Controller
      */
     public function store(StoreEnrainementRequest $request)
     {
-    
-        $coach= Coach::where('email',Auth::user()->email)->first();
+        $this->authorize('create', Entrainement::class);
+        $coach= Auth::user();
 
         $abonnements = Abonnement::where('id_adherent', $request->id_adherent)
             ->orderBy('date_Debut', 'desc')
@@ -122,7 +130,7 @@ class EntrainementController extends Controller
         }
         
 
-        return redirect()->route('entrainement.create')->with('success', 'Entraînement ajouté avec succès!');
+        return redirect()->route('entrainement.index')->with('status', 'Entraînement ajouté avec succès!');
     }
 
     /**
@@ -136,13 +144,17 @@ class EntrainementController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($id)
-    {
+    public function edit($id){
+
+        $this->authorize('update', Entrainement::class);
+
         $entrainement = Entrainement::with('jours')->findOrFail($id);
-        $adherents = Adherent::where('statut_abonnement','Actif')->get();
+        $adherents = User::whereHas('role', function ($query) {
+            $query->where('name', 'adherent');
+        })->where('statut_abonnement','Actif')->get();
         $machines = Machine::get();
     
-        return view('pages.Entrainement.edit', compact('entrainement', 'adherents', 'machines'));
+        return view('pages.coach.Entrainement.edit', compact('entrainement', 'adherents', 'machines'));
     }
     
 
@@ -151,11 +163,11 @@ class EntrainementController extends Controller
      */
     public function update(StoreEnrainementRequest $request, $id)
     {
+        $this->authorize('update', Entrainement::class);
         $entrainement = Entrainement::findOrFail($id);
     
         $entrainement->update($request->validated());
     
-        // Supprimer les anciens jours pour les recréer
         $entrainement->jours()->delete();
     
         foreach ($request->jours as $day => $data) {
@@ -168,7 +180,7 @@ class EntrainementController extends Controller
             ]);
         }
     
-        return redirect()->route('entrainement.index')->with('success', 'Entraînement mis à jour avec succès!');
+        return redirect()->route('entrainement.index')->with('status', 'Entraînement mis à jour avec succès!');
     }
     
 
@@ -177,12 +189,13 @@ class EntrainementController extends Controller
      */
     public function destroy($id)
 {
+    $this->authorize('delete', Entrainement::class);
     $entrainement = Entrainement::findOrFail($id);
 
     $entrainement->jours()->delete();
     $entrainement->delete();
 
-    return redirect()->route('entrainement.index')->with('success', 'Entraînement supprimé avec succès!');
+    return redirect()->route('entrainement.index')->with('status', 'Entraînement supprimé avec succès!');
 }
 
 }

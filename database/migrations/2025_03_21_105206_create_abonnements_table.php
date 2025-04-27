@@ -17,7 +17,7 @@ return new class extends Migration
             $table->date('date_Debut');
             $table->date('date_Fin');
             $table->decimal('prix', 8, 2);
-            $table->foreignId('id_adherent')->constrained('adherents')->onDelete('cascade');
+            $table->foreignId('id_adherent')->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

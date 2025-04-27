@@ -13,7 +13,19 @@
 
 <!-- Members Table -->
 <div class="bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
-    <h3 class="text-lg mb-4 font-semibold">Liste des Adhérents</h3>
+    <div class="flex justify-between mb-4">
+        <h3 class="text-lg mb-4 font-semibold">Liste des Adhérents</h3>
+        @include('components.searchInput', ['action' => route('adherents.search')])
+        <select 
+        class="table-filter bg-gray-700 text-white border border-gray-600 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition" 
+        id="adherent-filter" data-endpoint="{{ route('adherents.filter') }}" name="filter"
+        data-target="#adherent-table-body"
+    >            <option value="">All</option>
+            <option value="Actif">Actif</option>
+            <option value="Inactif">Inactif</option>
+            <option value="Expiré">Expiré</option>
+        </select>
+    </div>
     <div class="overflow-x-auto">
         <table class="min-w-full bg-gray-800 text-white border-collapse">
             <thead>
@@ -25,8 +37,8 @@
                     <th class="p-3 text-center border border-gray-600">Actions</th>
                 </tr>
             </thead>
-            <tbody>
-                @foreach($adherents as $adherent)
+            <tbody id="adherent-table-body">
+                @forelse($adherents as $adherent)
                 <tr>
                     <td class="p-3 border border-gray-600">{{ $adherent->name }}</td>
                     <td class="p-3 border border-gray-600">{{ $adherent->email }}</td>
@@ -48,9 +60,14 @@
                         </form>
                     </td>
                 </tr>
-                @endforeach
+                @empty
+                    <tr>
+                        <td colspan="6" class="text-center text-gray-400 p-4">Aucun adherent trouvé.</td>
+                    </tr>
+                @endforelse
             </tbody>
         </table>
+        {{ $adherents->links() }}
     </div>
 </div>
 @endsection

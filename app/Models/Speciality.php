@@ -16,6 +16,6 @@ class Speciality extends Model
      */
     public function coaches()
     {
-        return $this->hasMany(Coach::class);
+        return $this->hasMany(User::class);
     }
 }

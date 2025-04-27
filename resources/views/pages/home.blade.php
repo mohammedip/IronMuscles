@@ -275,7 +275,7 @@
                     </div>
 
                     <!-- Trimestriel Plan -->
-                    <div class="border-2 border-ff8906 rounded-lg overflow-hidden relative transform scale-105 z-10 shadow-2xl animate-on-scroll" data-delay="200">
+                    <div class="border-2 border-ff8906 rounded-lg overflow-hidden relative transform scale-105 z-10 shadow-2xl animate-on-scroll" data-delay="100">
                         <div class="absolute top-0 right-0 bg-ff8906 text-0f0e17 py-1 px-4 font-semibold">POPULAR</div>
                         <div class="p-8">
                             <h3 class="text-2xl font-bold text-fffffe mb-2">Trimestriel</h3>

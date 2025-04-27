@@ -1,0 +1,15 @@
+Voici le lien du repositorie sur GitHub du projet Fil rouge IronMuscles : 
+https://github.com/mohammedip/IronMuscles
+
+Voici le nouveau lien pour la planification du projet fil rouge sur jira : 
+https://reidamohammed.atlassian.net/jira/software/projects/IR/boards/40
+
+Voici le lien du cahier de charge : 
+https://docs.google.com/document/d/1oiVda2WMS2ntplDwbU3r3JADZICaVqEOBewzoc7ASOI/edit?usp=sharing
+
+Voici le lien pour la presentation sur canva 
+https://www.canva.com/design/DAGlWKhH2uw/nUSGA49GDff6Jy27uLtlGg/edit?utm_content=DAGlWKhH2uw&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
+
+voici les liens pour le maquettage ( figma ) sours et prototype : 
+https://www.figma.com/proto/V78flaEGg65C2PIWhBjpyq/Project-Fill-rouge?node-id=0-1&t=eRughtVi9lNrU6ad-1
+https://www.figma.com/design/V78flaEGg65C2PIWhBjpyq/Project-Fill-rouge?node-id=0-1&m=dev&t=eRughtVi9lNrU6ad-1

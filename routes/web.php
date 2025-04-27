@@ -2,8 +2,11 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PackController;
 use App\Http\Controllers\CoachController;
 use App\Http\Controllers\MemberController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\MachineController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdherentController;
@@ -12,7 +15,6 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\AbonnementController;
 use App\Http\Controllers\SpecialityController;
 use App\Http\Controllers\EntrainementController;
-use App\Http\Controllers\HomeController;
 
     Route::get('/login', function () {
         Auth::logout();
@@ -45,9 +47,28 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('adherent', AdherentController::class);
     Route::resource('entrainement', EntrainementController::class);
     Route::resource('machine', MachineController::class);
+    Route::resource('pack', PackController::class);
     Route::resource('coach',CoachController::class);
     Route::resource('speciality',SpecialityController::class);
     Route::resource('dashbord',DashbordController::class);
+
+    Route::get('/machines/filter', [MachineController::class, 'filter'])->name('machines.filter');
+    Route::get('/adherents/filter', [AdherentController::class, 'filter'])->name('adherents.filter');
+    Route::get('/coachs/filter', [CoachController::class, 'filter'])->name('coachs.filter');
+    Route::get('/abonnements/filter', [AbonnementController::class, 'filter'])->name('abonnements.filter');
+
+    
+    Route::get('/adherents/search', [SearchController::class, 'adherents'])->name('adherents.search');
+    Route::get('/machines/search', [SearchController::class, 'machines'])->name('machines.search');
+    Route::get('/entrainements/search', [SearchController::class, 'entrainements'])->name('entrainements.search');
+    Route::get('/coachs/search', [SearchController::class, 'coaches'])->name('coachs.search');
+    Route::get('/abonnements/search', [SearchController::class, 'abonnements'])->name('abonnements.search');
+    
+    
+    Route::get('abonnement', [AbonnementController::class, 'index'])->name('abonnement.index');
+    Route::get('abonnement/{abonnement}/edit', [AbonnementController::class, 'edit'])->name('abonnement.edit');
+    Route::put('abonnement/{abonnement}/update', [AbonnementController::class, 'update'])->name('abonnement.update');
+    Route::delete('abonnement/{abonnement}/destroy', [AbonnementController::class, 'destroy'])->name('abonnement.destroy');
 
     Route::get('/events', [EntrainementController::class, 'getEvents'])->name('planning.events');
     Route::get('/planning', [EntrainementController::class, 'planning'])->name('planning.index');
@@ -60,7 +81,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/adherent/{adherent}/ban', [AdherentController::class, 'ban'])->name('adherent.ban');
     Route::get('/adherent/{adherent}/activate', [AdherentController::class, 'activate'])->name('adherent.activate');
 
-    Route::get('/abonnements', [AbonnementController::class, 'index'])->name('abonnement.index');
     Route::post('/abonnement/payment-form', [AbonnementController::class, 'showPaymentForm'])->name('abonnement.paymentForm');
     Route::post('/abonnement/process-payment', [AbonnementController::class, 'processPayment'])->name('abonnement.processPayment');
     Route::get('/abonnement/success', [AbonnementController::class, 'success'])->name('abonnement.success');

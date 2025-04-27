@@ -19,13 +19,13 @@
             <p class="text-lg text-gray-300">Email: {{ $user->email }}</p>
 
             @role('adherent')
-                <p class="text-lg text-gray-300">Téléphone: {{ $adherent->numero_telephone }}</p>
-                <p class="text-lg text-gray-300">Adresse: {{ $adherent->adresse }}</p>
+                <p class="text-lg text-gray-300">Téléphone: {{ $user->numero_telephone }}</p>
+                <p class="text-lg text-gray-300">Adresse: {{ $user->adresse }}</p>
             @endrole    
             @role('coach')
-                <p class="text-lg text-gray-300">Téléphone: {{ $coach->numero_telephone }}</p>
-                <p class="text-lg text-gray-300">Spécialité: {{ $coach->speciality->name }}</p>
-                <p class="text-lg text-gray-300">Date de recrutement: {{ \Carbon\Carbon::parse($coach->date_recrutement)->format('d M Y') }}</p>
+                <p class="text-lg text-gray-300">Téléphone: {{ $user->numero_telephone }}</p>
+                <p class="text-lg text-gray-300">Spécialité: {{ $user->speciality->name }}</p>
+                <p class="text-lg text-gray-300">Date de recrutement: {{ \Carbon\Carbon::parse($user->date_recrutement)->format('d M Y') }}</p>
             @endrole
             @role('admin')
                 <p class="text-lg text-gray-300">Rôle: {{ $user->role->name }}</p>
@@ -106,15 +106,15 @@
     <!-- Workout Plan Section -->
     <div class="bg-gray-900 p-8 rounded-xl shadow-lg mb-6">
         <h3 class="text-2xl font-semibold text-white mb-4">Mon Plan d'Entraînement</h3>
-        @if ($entrainement)
+        @if ($adherentEntrainement)
             <div class="space-y-4 text-gray-300">
                 <div class="flex justify-between">
                     <span class="text-lg">Plan</span>
-                    <span class="text-lg"> {{$entrainement->coach->speciality->name}}</span>
+                    <span class="text-lg"> {{$adherentEntrainement->coach->speciality->name}}</span>
                 </div>
                 <div class="flex justify-between">
                     <span class="text-lg">Coach</span>
-                    <span class="text-lg">{{$entrainement->coach->name}}</span>
+                    <span class="text-lg">{{$adherentEntrainement->coach->name}}</span>
                 </div>
                 <div class="flex justify-between">
                     <span class="text-lg">Prochain entraînement</span>

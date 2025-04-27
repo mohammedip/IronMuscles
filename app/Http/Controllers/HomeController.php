@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use App\Models\User;
 use App\Models\Coach;
 use App\Models\Adherent;
 use App\Mail\ContactUsMail;
@@ -17,8 +18,12 @@ class HomeController extends Controller
 {
     public function index(){
 
-        $adherentCount=Adherent::count();
-        $coachCount=Coach::count();
+        $adherentCount=User::whereHas('role', function ($query) {
+            $query->where('name', 'adherent');
+        })->count();
+        $coachCount=User::whereHas('role', function ($query) {
+            $query->where('name', 'coach');
+        })->count();
         $experienceYear=Carbon::now()->year - 2008;
 
         return view('pages/home',compact('adherentCount','coachCount','experienceYear'));

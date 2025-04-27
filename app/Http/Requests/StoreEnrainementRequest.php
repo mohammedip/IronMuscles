@@ -22,9 +22,8 @@ class StoreEnrainementRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id_adherent' => 'required|exists:adherents,id',
+            'id_adherent' => 'required|exists:users,id',
             'date_debut' => 'required|date|after:today',
-            'date_fin' => 'required|date|after_or_equal:date_debut',
             'jours' => 'required|array',
             'jours.*.exercices' => 'required|string|max:255',
             'jours.*.id_machine' => 'required|exists:machines,id',

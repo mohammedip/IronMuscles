@@ -20,88 +20,65 @@ class ProfileController extends Controller
     public function index()
     {
         $user = Auth::user();
-
-        $adherent = Adherent::where('email', $user->email)->first();
-        if ($adherent) {
-            $abonnement = Abonnement::where('id_adherent', $adherent->id)
+        $abonnement = null;
+        $abonnementStatus = null;
+        $adherentEntrainement = null;
+        $coachEntrainement = null;
+        $nextTrainingDate = 'Aucun entraînement prévu';
+    
+        // Check if user has role adherent
+        if ($user->role && $user->role->name === 'adherent') {
+            $abonnement = Abonnement::where('id_adherent', $user->id)
                 ->orderBy('date_Debut', 'desc')
                 ->first();
-
+    
             $abonnementStatus = ($abonnement && $abonnement->date_Fin <= now()) ? 'Expiré' : 'Actif';
-
-            $entrainement = Entrainement::where('id_adherent', $adherent->id)->with('coach.speciality', 'jours')->orderBy('date_Debut', 'desc')
-            ->first();
-
-            $nextTrainingDate ='Aucun entraînement prévu';
-            if ($entrainement) {
-                $dateDebut = Carbon::parse($entrainement->date_debut);
-                $jours = $entrainement->jours; 
-            
-                $closestDay = null;
+    
+            $adherentEntrainement = Entrainement::where('id_adherent', $user->id)
+                ->with('coach.speciality', 'jours')
+                ->orderBy('date_Debut', 'desc')
+                ->first();
+    
+            if ($adherentEntrainement) {
+                $dateDebut = Carbon::parse($adherentEntrainement->date_debut);
+                $jours = $adherentEntrainement->jours;
                 $closestDate = null;
-                $currentDate = Carbon::now(); 
-            
+    
                 foreach ($jours as $jour) {
-                    $trainingDate = $dateDebut->copy()->addDays($jour->jour_numero-1);
-            
-                    if ($trainingDate >= $currentDate) {
+                    $trainingDate = $dateDebut->copy()->addDays($jour->jour_numero - 1);
+    
+                    if ($trainingDate >= now()) {
                         if (!$closestDate || $trainingDate < $closestDate) {
                             $closestDate = $trainingDate;
-                            $closestDay = $jour;
                         }
                     }
                 }
-                if($closestDate){
-
-                    $nextTrainingDate =$closestDate->format('l d M Y');
-                }else{
-                    $nextTrainingDate = "Non entrainement prevus !";
-                }
-
-                
+    
+                $nextTrainingDate = $closestDate
+                    ? $closestDate->format('l d M Y')
+                    : "Non entraînement prévu !";
             }
-            
-
-            return view('pages.profile.index', [
-                'user' => $user,
-                'adherent' => $adherent,
-                'abonnement' => $abonnement,
-                'abonnementStatus' => $abonnementStatus,
-                'entrainement' => $entrainement, 
-                'nextTrainingDay' => $nextTrainingDate,
-            ]);
         }
-
-        $coach = Coach::where('email', $user->email)->first();
-        if ($coach) {
-            $entrainement = Entrainement::where('id_coach', $coach->id)->get();
-
-            return view('pages.profile.index', [
-                'user' => $user,
-                'coach' => $coach,
-                'entrainement' => $entrainement,
-            ]);
-        }
-
+    
         return view('pages.profile.index', [
             'user' => $user,
+            'abonnement' => $abonnement,
+            'abonnementStatus' => $abonnementStatus,
+            'adherentEntrainement' => $adherentEntrainement,
+            'coachEntrainement' => $coachEntrainement,
+            'nextTrainingDay' => $nextTrainingDate,
         ]);
-    }
+    }  
 
 
     public function edit()
     {
         $user = Auth::user();
 
-        $adherent = Adherent::where('email', $user->email)->first();
-        $coach = Coach::where('email', $user->email)->first();
-
         $specialties = Speciality::get();
 
         return view('pages.profile.edit', [
             'user' => $user,
-            'adherent' => $adherent,
-            'coach' => $coach,
             'specialties' => $specialties, 
         ]);
     }
@@ -121,14 +98,6 @@ class ProfileController extends Controller
             $imagePath = $request->file('img')->store('profiles', 'public');
             $data['img'] = $imagePath;
         }
-    
-        if ($adherent = Adherent::where('email', $user->email)->first()) {
-            $adherent->update($data);
-        }
-    
-        if ($coach = Coach::where('email', $user->email)->first()) {
-            $coach->update($data);
-        }
 
         $user->update($data);
 
@@ -140,7 +109,14 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
     
-        $imagePath = public_path('storage/'.$user->img); 
+        if(empty($use->img)){
+
+            $imagePath = public_path('images/profile-picture.jpg'); 
+
+        }else{
+            $imagePath = public_path('storage/'.$user->img); 
+            
+        }
         $imageData = base64_encode(file_get_contents($imagePath));
         $imageType = pathinfo($imagePath, PATHINFO_EXTENSION);
         $imageSrc = 'data:image/' . $imageType . ';base64,' . $imageData;

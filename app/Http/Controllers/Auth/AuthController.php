@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Models\Adherent;
 use Illuminate\Http\Request;
 use App\Mail\ResetPasswordMail;
 use Illuminate\Support\Facades\DB;
@@ -31,20 +30,15 @@ class AuthController extends Controller
 
         if(!$user){
             return redirect()->back()->with('error', 'Invalid Email ');
-        }
-
-        $adherent=Adherent::where('email',$user->email)->first();
-
-        
+        }        
 
         if (!Hash::check($request->password, $user->password) ) {
-
 
             return redirect()->back()->with('error', 'Password incorrect ');
 
         }else{
 
-            if($adherent && $adherent->is_activate == 0){
+            if($user->is_activate == 0){
                 return redirect()->back()->with('error', 'Your were baned');
             }
             Auth::login($user);
@@ -61,16 +55,16 @@ class AuthController extends Controller
         return redirect('/login');
     }
 
-    public function register(RegisterRequest $request , StoreAdherentRequest $AdherentRequest){
+    public function register(RegisterRequest $request ){
 
-        $user =  $this->authRepository->create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role_id' => 7,
-        ]);
+        $user =  $this->authRepository->create( array_merge(
+            $request->validated(),
+            [
+                'password' => Hash::make($request->password),
+                'role_id' => 7,
+            ]
+        ));
 
-        Adherent::create($AdherentRequest->validated());
 
         Auth::login($user);
 

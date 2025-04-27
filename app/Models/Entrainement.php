@@ -13,17 +13,17 @@ class Entrainement extends Model
         'id_adherent',
         'id_coach',
         'date_debut',
-        'date_fin',
+       
     ];
 
     public function adherent()
     {
-        return $this->belongsTo(Adherent::class, 'id_adherent');
+        return $this->belongsTo(User::class, 'id_adherent');
     }
 
     public function coach()
     {
-        return $this->belongsTo(Coach::class, 'id_coach');
+        return $this->belongsTo(User::class, 'id_coach');
     }
 
     public function jours()

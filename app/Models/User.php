@@ -23,6 +23,13 @@ class User extends Authenticatable
         'password',
         'role_id',
         'img',
+        'date_naissance',
+        'adresse',
+        'numero_telephone',
+        'is_activate',
+        'statut_abonnement',
+        'id_specialite',
+        'date_recrutement',
     ];
 
     /**
@@ -46,6 +53,11 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function speciality(){
+
+        return $this->belongsTo(Speciality::class, 'id_specialite');
     }
 
     public function role()

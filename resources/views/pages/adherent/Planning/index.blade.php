@@ -36,12 +36,12 @@
             padding-bottom: 10px;
         }
 
-        /* Space between Mois | Semaine | Jour */
+
         .fc-toolbar-chunk:nth-child(3) {
             margin-left: 20px;
         }
 
-        /* Space between "Aujourd'hui" and navigation buttons */
+
         .fc-toolbar-chunk:nth-child(1) {
             display: flex;
             gap: 15px;
@@ -77,23 +77,23 @@
         }
 
         .fc-col-header {
-            background-color: #1E293B !important; /* Dark background */
-            color: #ffffff !important; /* White text */
+            background-color: #1E293B !important; 
+            color: #ffffff !important; 
         }
 
-        /* Ensure day names (Lundi, Mardi, etc.) are visible */
+
         .fc-col-header-cell {
             font-size: 16px;
             font-weight: bold;
             padding: 12px;
-            text-transform: capitalize; /* Keep first letter capitalized */
+            text-transform: capitalize; 
         }
 
-        /* Border and spacing for better visibility */
+
         .fc-col-header-cell-cushion {
-            color: #ffffff !important; /* Ensure text remains visible */
+            color: #ffffff !important; 
             padding: 10px;
-            border-bottom: 2px solid #3B82F6; /* Add a subtle blue underline */
+            border-bottom: 2px solid #3B82F6; 
         }
 
         .fc-daygrid-event {
@@ -136,9 +136,26 @@
             eventTextColor: '#ffffff',
             eventDisplay: 'block',
             eventClick: function(info) {
-                let eventData = info.event.extendedProps; 
-                alert("Cours: " + eventData.programme + " - " + eventData.coach + "\nDébut: " + info.event.start.toLocaleString());
-            }
+            let eventData = info.event.extendedProps;
+            Swal.fire({
+                title: `<span style="color:#3B82F6;">${info.event.title}</span>`,
+                html: `
+                    <div style="color:#d1d5db; text-align: left;">
+                        <p><strong>Programme:</strong> ${eventData.programme}</p>
+                        <p><strong>Coach:</strong> ${eventData.coach}</p>
+                        <p><strong>Début:</strong> ${new Date(info.event.start).toLocaleString()}</p>
+                    </div>
+                `,
+                background: '#1F2937',
+                color: '#fff',
+                confirmButtonColor: '#3B82F6',
+                confirmButtonText: 'Fermer',
+                customClass: {
+                    popup: 'rounded-xl shadow-lg'
+                }
+            });
+        }
+
         });
 
         calendar.render();

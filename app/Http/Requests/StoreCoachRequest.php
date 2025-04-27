@@ -26,7 +26,7 @@ class StoreCoachRequest extends FormRequest
             'name' => 'required|string|max:255',
             'id_specialite' => 'required|string|max:255',
             'numero_telephone' => 'required|string|max:20',
-            'email' => 'required|email|unique:coaches,email',
+            'email' => 'required|email|unique:users,email',
             'date_recrutement' => 'required|date|before_or_equal:' . Carbon::now()->toDateString(),
             'password' => 'required|string|min:6',
 

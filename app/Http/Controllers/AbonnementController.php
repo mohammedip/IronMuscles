@@ -3,35 +3,38 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use Stripe\Stripe;
+use App\Models\User;
 use App\Models\Payment;
-use App\Models\Adherent;
 use App\Models\Abonnement;
+use App\Models\Entrainement;
 use Illuminate\Http\Request;
 use Stripe\Checkout\Session;
 use Illuminate\Support\Facades\Log;
 use Srmklive\PayPal\Facades\PayPal;
 use Illuminate\Support\Facades\Auth;
-
+use App\Http\Requests\UpdateAbonnementRequest;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class AbonnementController extends Controller
 {
+    use AuthorizesRequests;
 
     public function index()
     {
+        
         $user = Auth::user();
 
         if ($user->role->name == "admin") {
-            $abonnements = Abonnement::with('adherent')->orderBy('date_Debut', 'desc')->get();
+            $abonnements = Abonnement::with('adherent')->orderBy('date_Debut', 'desc')->paginate(10);
             return view('pages.admin.Abonnement.index', compact('abonnements'));
         }
 
-        $adherent = Adherent::where('email', $user->email)->first();
 
-        if (!$adherent) {
+        if ($user->role->name != "adherent") {
             return redirect()->route('home')->with('error', 'Vous n\'avez pas d\'abonnement enregistré.');
         }
 
-        $abonnements = Abonnement::where('id_adherent', $adherent->id)
+        $abonnements = Abonnement::where('id_adherent', $user->id)
             ->orderBy('date_Debut', 'desc')
             ->get();
 
@@ -49,11 +52,13 @@ class AbonnementController extends Controller
     }
 
     public function edit(Abonnement $abonnement){
-        return view('pages.admin.Abonnement.edit',compact('abonnement'));
+        $this->authorize('update', Abonnement::class);
+        return view('pages.admin.Abonnement.edit', compact('abonnement'));
     }
 
-    public function update(Request $request, Abonnement $abonnement)
+    public function update(UpdateAbonnementRequest $request, Abonnement $abonnement)
     {
+        $this->authorize('update', Abonnement::class);
         $request->validated();
 
         $abonnement->update([
@@ -62,13 +67,30 @@ class AbonnementController extends Controller
             'date_Debut' => $request->date_Debut,
             'date_Fin' => $request->date_Fin,
         ]);
+        $payment = Payment::where('abonnement_id',$abonnement->id)->first();
+
+        $payment->update(['amount' => $request->prix]);
 
         return redirect()->route('abonnement.index')->with('status', 'Abonnement mis à jour avec succès.');
     }
 
 
     public function destroy(Abonnement $abonnement){
-        
+
+        $this->authorize('delete', Abonnement::class);
+
+        $abonnement->delete();
+        $adherent = User::where('id',$abonnement->id_adherent)->first();
+        $adherent->update(['statut_abonnement' => 'Inactif']);
+        $entrainement = Entrainement::where('id_adherent',$abonnement->id_adherent)->first();
+        if($entrainement){
+
+            $entrainement->delete();
+        }
+
+
+        return redirect()->route('abonnement.index')->with('status', 'Abonnement deleted.');
+
     }
 
 
@@ -76,13 +98,11 @@ class AbonnementController extends Controller
     {
         $user = Auth::user();
 
-        $adherent = Adherent::where('email', $user->email)->first();
-
-        if (!$adherent) {
+        if ($user->role->name != "adherent") {
             return redirect()->route('home')->with('error', 'Vous devez etre un adherent pour afectuer une abonnement.');
         }
 
-        $abonnement = Abonnement::where('id_adherent', $adherent->id)
+        $abonnement = Abonnement::where('id_adherent', $user->id)
             ->where('date_Fin', '>', Carbon::now())
             ->first();
 
@@ -111,11 +131,8 @@ class AbonnementController extends Controller
 
     public function processPayment(Request $request)
     {
-        $validated = $request->validate([
-            'type_Abonnement' => 'required|in:Mensuel,Trimestriel,Semi-annuel,Annuel',
-        ]);
     
-        $adherent = Adherent::where('email', Auth::user()->email)->first();
+        $user = Auth::user();
     
         $prices = [
             'Mensuel' => 150.00,
@@ -131,11 +148,11 @@ class AbonnementController extends Controller
             'Annuel' => '+1 year',
         ];
     
-        $price = $prices[$validated['type_Abonnement']];
+        $price = $prices[$request->type_Abonnement];
         $startDate = now();
-        $endDate = now()->modify($durations[$validated['type_Abonnement']]);
+        $endDate = now()->modify($durations[$request->type_Abonnement]);
     
-        return $this->createStripePayment($price, $validated['type_Abonnement'], $adherent->id, $startDate, $endDate);
+        return $this->createStripePayment($price, $request->type_Abonnement, $user->id, $startDate, $endDate);
     }
     
     
@@ -189,15 +206,17 @@ class AbonnementController extends Controller
 
                 $metadata = $session->metadata;
 
-                $abonnement = Abonnement::create([
-                    'type_Abonnement' => $metadata->type,
-                    'date_Debut' => $metadata->start_date,
-                    'date_Fin' => $metadata->end_date,
-                    'prix' => $metadata->price,
-                    'id_adherent' => $metadata->adherent_id,
-                ]);
+                
+                    $abonnement = Abonnement::create([
+                        'type_Abonnement' => $metadata->type,
+                        'date_Debut' => $metadata->start_date,
+                        'date_Fin' => $metadata->end_date,
+                        'prix' => $metadata->price,
+                        'id_adherent' => $metadata->adherent_id,
+                    ]);
+               
 
-                $adherent=Adherent::where('id',$metadata->adherent_id);
+                $adherent=User::where('id',$metadata->adherent_id);
 
                 $adherent->update(['statut_abonnement'=> 'Actif']);
                 
@@ -230,5 +249,18 @@ class AbonnementController extends Controller
     {
         return view('pages/adherent/Abonnement.success');
     }
+
+    public function filter(Request $request){
+
+        $filter = $request->input('filter');
+    
+        if($filter){
+            $abonnements = Abonnement::where('type_Abonnement', $filter)->get();
+        }else{
+            $abonnements = Abonnement::get();
+        }
+            return view('partials.abonnements', compact('abonnements'))->render();
+    }  
+
 }
 

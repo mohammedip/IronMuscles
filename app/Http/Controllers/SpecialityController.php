@@ -2,18 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Speciality;
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class SpecialityController extends Controller
 {
+    use AuthorizesRequests;
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $specialities = Speciality::get();
-        return view('pages/Specialite.index', compact('specialities'));
+        $this->authorize('viewAny', Speciality::class);
+
+        $specialities = Speciality::paginate(10);
+        return view('pages/admin/Specialite.index', compact('specialities'));
     }
 
     /**
@@ -21,7 +26,8 @@ class SpecialityController extends Controller
      */
     public function create()
     {
-        return view('pages/Specialite.create');
+        $this->authorize('create', Speciality::class);
+        return view('pages/admin/Specialite.create');
     }
 
     /**
@@ -30,12 +36,12 @@ class SpecialityController extends Controller
     public function store(Request $request)
     {
        
-
+        $this->authorize('create', Speciality::class);
         Speciality::create( $request->validate([
             'name' => 'required|string|max:255|unique:specialities,name',
         ]));
 
-        return redirect()->route('speciality.index')->with('success', 'Speciality created successfully.');
+        return redirect()->route('speciality.index')->with('status', 'Speciality created statusfully.');
     }
 
     /**
@@ -43,7 +49,8 @@ class SpecialityController extends Controller
      */
     public function show(Speciality $speciality)
     {
-        return view('pages/Specialite.show', compact('speciality'));
+        $this->authorize('viewAny', Speciality::class);
+        return view('pages/admin/Specialite.show', compact('speciality'));
     }
 
     /**
@@ -51,7 +58,8 @@ class SpecialityController extends Controller
      */
     public function edit(Speciality $speciality)
     {
-        return view('pages/Specialite.edit', compact('speciality'));
+        $this->authorize('update', Speciality::class);
+        return view('pages/admin/Specialite.edit', compact('speciality'));
     }
 
     /**
@@ -59,12 +67,12 @@ class SpecialityController extends Controller
      */
     public function update(Request $request, Speciality $speciality)
     {
-        
+        $this->authorize('update', Speciality::class);
         $speciality->update($request->validate([
             'name' => 'sometimes|string|max:255|unique:specialities,name,',
         ]));
 
-        return redirect()->route('speciality.index')->with('success', 'Speciality updated successfully.');
+        return redirect()->route('speciality.index')->with('status', 'Speciality updated statusfully.');
     }
 
     /**
@@ -72,8 +80,9 @@ class SpecialityController extends Controller
      */
     public function destroy(Speciality $speciality)
     {
+        $this->authorize('delete', Speciality::class);
         $speciality->delete();
 
-        return redirect()->route('speciality.index')->with('success', 'Speciality deleted successfully.');
+        return redirect()->route('speciality.index')->with('status', 'Speciality deleted statusfully.');
     }
 }

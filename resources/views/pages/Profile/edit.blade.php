@@ -56,13 +56,13 @@
             @role('adherent')
                 <div class="flex justify-between">
                     <label for="numero_telephone" class="text-lg">Téléphone</label>
-                    <input type="text" id="numero_telephone" name="numero_telephone" value="{{ old('numero_telephone', $adherent->numero_telephone) }}" class="bg-gray-800 text-white p-2 rounded-md">
+                    <input type="text" id="numero_telephone" name="numero_telephone" value="{{ old('numero_telephone', $user->numero_telephone) }}" class="bg-gray-800 text-white p-2 rounded-md">
                     @error('numero_telephone') <span class="text-red-500">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="flex justify-between">
                     <label for="adresse" class="text-lg">Adresse</label>
-                    <input type="text" id="adresse" name="adresse" value="{{ old('adresse', $adherent->adresse) }}" class="bg-gray-800 text-white p-2 rounded-md">
+                    <input type="text" id="adresse" name="adresse" value="{{ old('adresse', $user->adresse) }}" class="bg-gray-800 text-white p-2 rounded-md">
                     @error('adresse') <span class="text-red-500">{{ $message }}</span> @enderror
 
                 </div>
@@ -71,7 +71,7 @@
             @role('coach')
                 <div class="flex justify-between">
                     <label for="numero_telephone" class="text-lg">Téléphone</label>
-                    <input type="text" id="numero_telephone" name="numero_telephone" value="{{ old('numero_telephone', $coach->numero_telephone) }}" class="bg-gray-800 text-white p-2 rounded-md">
+                    <input type="text" id="numero_telephone" name="numero_telephone" value="{{ old('numero_telephone', $user->numero_telephone) }}" class="bg-gray-800 text-white p-2 rounded-md">
                     @error('numero_telephone') <span class="text-red-500">{{ $message }}</span> @enderror
                 </div>
 
@@ -80,7 +80,7 @@
                     <select name="id_specialite" id="id_specialite" class="bg-gray-800 text-white px-12 py-2 rounded-md">
                         @foreach($specialties as $specialty)
                             <option value="{{ $specialty->id }}" 
-                                    {{ $coach->id_specialite == $specialty->id ? 'selected' : '' }}>
+                                    {{ $user->id_specialite == $specialty->id ? 'selected' : '' }}>
                                 {{ $specialty->name }}
                             </option>
                         @endforeach

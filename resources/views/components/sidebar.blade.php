@@ -24,13 +24,20 @@
                 </a>
             </li>
 
-            @endrole
+           
             <!-- Machines -->
-            @role('admin')
+           
             <li class="mb-3">
                 <a href="{{ route('machine.index') }}" class="flex items-center p-3 bg-gray-700 text-white rounded-lg transition duration-300 hover:bg-blue-600 hover:text-white transform hover:translate-x-2">
                     <i class="fas fa-cogs"></i> 
                     <span class="sidebar-text ml-3">Machines</span>
+                </a>
+            </li>
+
+            <li class="mb-3">
+                <a href="{{ route('abonnement.index') }}" class="flex items-center p-3 bg-gray-700 text-white rounded-lg transition duration-300 hover:bg-blue-600 hover:text-white transform hover:translate-x-2">
+                    <i class="fas fa-cogs"></i> 
+                    <span class="sidebar-text ml-3">Abonnement</span>
                 </a>
             </li>
 

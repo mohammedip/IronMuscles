@@ -13,7 +13,19 @@
     @endif
 
 <div class="max-w-5xl mx-auto bg-gray-800 p-6 rounded shadow-md">
-    <h2 class="text-center text-xl font-semibold mb-4">Liste des Coaches</h2>
+    <div class="flex justify-between mb-4">
+        <h2 class="text-center text-xl font-semibold mb-4">Liste des Coaches</h2>
+        @include('components.searchInput', ['action' => route('coachs.search')])
+        <select 
+        class="table-filter bg-gray-700 text-white border border-gray-600 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+       id="coach-filter" data-endpoint="{{ route('coachs.filter') }}" name="filter"
+        data-target="#coach-table-body"
+    >            <option value="">All</option>
+            @forEach ($specialities as $speciality)
+                <option value="{{ $speciality->id }}">{{ $speciality->name }}</option>
+            @endforEach
+        </select>
+    </div>
 
     <!-- Coaches Table -->
     <table class="w-full table-auto border-collapse border border-gray-600 text-white">
@@ -28,7 +40,7 @@
                 <th class="border border-gray-600 p-3">Actions</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="coach-table-body">
             @forelse ($coaches as $coach)
                 <tr class="bg-gray-800">
                     <td class="border border-gray-600 p-3 text-center">{{ $coach->id }}</td>
@@ -52,7 +64,7 @@
             @endforelse
         </tbody>
     </table>
-
+    {{ $coaches->links() }}
     <!-- Add New Coach Button -->
     <div class="text-center mt-6">
         <a href="{{ route('coach.create') }}" 

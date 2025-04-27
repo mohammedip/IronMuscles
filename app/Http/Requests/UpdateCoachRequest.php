@@ -25,7 +25,7 @@ class UpdateCoachRequest extends FormRequest
             'name' => 'sometimes|string|max:255',
             'specialite' => 'sometimes|string|max:255',
             'numero_telephone' => 'sometimes|string|max:20',
-            'email' => 'sometimes|email|unique:coaches,email,',
+            'email' => 'sometimes|email|unique:users,email,',
             'date_recrutement' => 'sometimes|date',
         ];
     }

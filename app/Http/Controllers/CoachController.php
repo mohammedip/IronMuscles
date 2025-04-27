@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\Coach;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\StoreCoachRequest;
@@ -31,8 +30,12 @@ class CoachController extends Controller
     public function index()
     {
         $this->authorize('viewAny', User::class);
-        $coaches = Coach::with('speciality')->get();
-        return view('pages/Coach.index', compact('coaches'));
+        $specialities = Speciality::get();
+        $coaches = User::whereHas('role', function ($query) {
+            $query->where('name', 'coach');
+        })->with('speciality')->paginate(10);
+
+        return view('pages/admin/Coach.index', compact('coaches','specialities'));
     }
 
     /**
@@ -40,8 +43,9 @@ class CoachController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', User::class);
         $specialities = Speciality::get();
-        return view('pages/Coach.create', compact('specialities'));
+        return view('pages/admin/Coach.create', compact('specialities'));
     }
 
     /**
@@ -49,54 +53,59 @@ class CoachController extends Controller
      */
     public function store(StoreCoachRequest $request)
     {
-        Coach::create($request->validated());
+        $this->authorize('create', User::class);
 
-        $this->authRepository->create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role_id' => 6,
-        ]);
+        $this->authRepository->create(array_merge(
+            $request->validated(),
+            [
+                'password' => Hash::make($request->password),
+                'role_id' => 6,
+            ]
+        ));
 
-        return redirect()->route('coach.index')->with('success', 'Coach created successfully.');
+        return redirect()->route('coach.index')->with('status', 'Coach created successfully.');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Coach $coach)
+    public function show(User $coach)
     {
-        return view('pages/Coach.show', compact('coach'));
+        $this->authorize('viewAny', User::class);
+        return view('pages/admin/Coach.show', compact('coach'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Coach $coach)
-    {
-        $specialities = Speciality::get();
-        return view('pages/Coach.edit', compact('coach','specialities'));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateCoachRequest $request, Coach $coach)
-    {
-        $coach->update($request->validated());
-
-        return redirect()->route('coach.index')->with('success', 'Coach updated successfully.');
-    }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Coach $coach)
+    public function destroy(User $coach)
     {
+        $this->authorize('delete', User::class);
         $coach->delete();
 
-        return redirect()->route('coach.index')->with('success', 'Coach deleted successfully.');
+        return redirect()->route('coach.index')->with('status', 'Coach deleted successfully.');
     }
+
+    public function filter(Request $request)
+    {
+        $filter = $request->input('filter');
+        $specialities = Speciality::get();
+
+        if($filter){
+            $coaches =User::whereHas('role', function ($query) {
+                $query->where('name', 'coach');
+            })->where('id_specialite', $filter)->with('speciality')->get();
+        
+        }else{
+            $coaches =User::whereHas('role', function ($query) {
+                $query->where('name', 'coach');
+            })->get();
+        }
+    
+        return view('partials.coaches', compact('coaches','specialities'))->render();
+    }
+    
 
 
 }

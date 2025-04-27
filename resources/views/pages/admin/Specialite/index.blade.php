@@ -11,7 +11,10 @@
 @endif
 
 <div class="max-w-4xl mx-auto bg-gray-800 p-6 rounded shadow-md">
-    <h2 class="text-center text-xl font-semibold mb-4">Liste des Spécialités</h2>
+    <div class="flex justify-between mb-4">
+        <h2 class="text-center text-xl font-semibold mb-4">Liste des Spécialités</h2>
+        @include('components.searchInput')
+    </div>
 
     <table class="w-full table-auto border-collapse border border-gray-600 text-white">
         <thead>
@@ -42,7 +45,7 @@
             @endforelse
         </tbody>
     </table>
-
+    {{ $specialities->links() }}
     <div class="text-center mt-6">
         <a href="{{ route('speciality.create') }}" class="bg-blue-600 px-4 py-2 rounded text-white font-semibold hover:bg-blue-700">Ajouter une Spécialité</a>
     </div>

@@ -20,7 +20,7 @@ class Abonnement extends Model
 
     public function adherent()
     {
-        return $this->belongsTo(Adherent::class, 'id_adherent');
+        return $this->belongsTo(User::class, 'id_adherent');
     }
 
 
